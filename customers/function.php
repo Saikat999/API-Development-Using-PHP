@@ -153,5 +153,58 @@ function getCustomer($customerParams){
 }
 
 
+//Update the customer data
+function updateCustomer($customerInput, $customerParams){
+
+    global $con;
+
+    if(!isset($customerParams['id'])){
+        return error422('Customer Id not found');
+
+    }elseif($customerParams['id'] == null){
+        return error422('Enter customer ID');
+    }
+
+    $customerId = mysqli_real_escape_string($con, $customerParams['id']);
+
+    $name = mysqli_real_escape_string($con, $customerInput['name']);
+    $email = mysqli_real_escape_string($con, $customerInput['email']);
+    $phone = mysqli_real_escape_string($con, $customerInput['phone']);
+
+    if(empty(trim($name))){
+        return error422('Enter your name');
+
+    }elseif(empty(trim($email))){
+        return error422('Enter your email');
+
+    }elseif(empty(trim($phone))){
+        return error422('Enter your phone');
+
+    }else{
+
+        $query = "UPDATE customers SET name='$name', email='$email', phone='$phone' WHERE id='$customerId' LIMIT 1";
+        $result = mysqli_query($con, $query);
+
+        if($result){
+            $data = [
+                'status' => 200,
+                'message'=> 'Customer Updated Successfully'
+            ];
+            header('HTTP/1.0 200 Updated');
+            return json_encode($data);
+
+        }else{
+
+            $data = [
+                'status' => 500,
+                'message'=> 'Internal Server Error'
+            ];
+            header('HTTP/1.0 500 Internal Server Error');
+            return json_encode($data);
+        }
+    }
+}
+
+
 
 ?>
